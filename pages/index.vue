@@ -1,6 +1,6 @@
 <template>
   <div>
-    <select-driver v-if="addDriver" @click="addRoom" />
+    <select-driver v-if="addDriver" @click="addRoom" @cancel="addDriver=false" />
     <vue-advanced-chat
       height="calc(100vh - 65px)"
       :current-user-id="currentUserId"
