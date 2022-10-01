@@ -3,13 +3,15 @@ import { firestoreAction, vuexfireMutations } from 'vuexfire'
 export const state = () => ({
   session: null,
   drivers: [],
-  messages: []
+  messages: [],
+  rooms: []
 })
 
 export const getters = {
   session (state) { return state.session },
   drivers (state) { return state.drivers },
-  messages (state) { return state.messages }
+  messages (state) { return state.messages },
+  rooms (state) { return state.rooms }
 }
 
 export const mutations = {
@@ -39,8 +41,11 @@ export const actions = {
     commit('setDrivers', await this.$axios.$get('/drivers'))
   },
   fetchMessages: firestoreAction(function ({ bindFirestoreRef }) {
-    // return the promise returned by `bindFirestoreRef`
     const db = this.$fire.firestore
     return bindFirestoreRef('messages', db.collection('messages').orderBy('_id'))
+  }),
+  bindRooms: firestoreAction(function ({ state, bindFirestoreRef }) {
+    return bindFirestoreRef('rooms', this.$fire.firestore.collection('rooms')
+      .where('id', 'in', state.drivers.map(d => `${d.id}_${state.session.id}`)))
   })
 }

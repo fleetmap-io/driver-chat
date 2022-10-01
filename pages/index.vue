@@ -9,6 +9,7 @@
       :messages-loaded="messagesLoaded"
       @send-message="$store.dispatch('sendMessage', $event.detail[0])"
       @fetch-messages="fetchMessages($event.detail[0])"
+      @add-room="addRoom"
     />
   </div>
 </template>
@@ -27,9 +28,10 @@ export default {
       messagesLoaded: false
     }
   },
-  fetch () {
-    this.$store.dispatch('fetchDrivers')
-    this.$store.dispatch('fetchMessages')
+  async fetch () {
+    await this.$store.dispatch('fetchDrivers')
+    await this.$store.dispatch('fetchMessages')
+    await this.$store.dispatch('bindRooms')
   },
   computed: {
     ...mapGetters(['drivers']),
@@ -54,6 +56,8 @@ export default {
     }
   },
   methods: {
+    addRoom () {
+    },
     fetchMessages (/* {  room, options = {}  } */) {
       this.messages = this.$store.getters.messages
       this.messagesLoaded = true
