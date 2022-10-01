@@ -7,7 +7,7 @@
       :rooms-loaded="true"
       :messages="JSON.stringify(messages)"
       :messages-loaded="messagesLoaded"
-      @send-message="sendMessage($event.detail[0])"
+      @send-message="$store.dispatch('sendMessage', $event.detail[0])"
       @fetch-messages="fetchMessages($event.detail[0])"
     />
   </div>
@@ -29,6 +29,7 @@ export default {
   },
   fetch () {
     this.$store.dispatch('fetchDrivers')
+    this.$store.dispatch('fetchMessages')
   },
   computed: {
     ...mapGetters(['drivers']),
@@ -53,14 +54,17 @@ export default {
     }
   },
   methods: {
-    fetchMessages ({ room, options = {} }) {
+    fetchMessages (/* {  room, options = {}  } */) {
+      this.messages = this.$store.getters.messages
+      this.messagesLoaded = true
+      /*
       if (options.reset) {
         this.messages = this.addMessages(room.roomId, true)
       } else {
         this.messages = [...this.addMessages(room.roomId), ...this.messages]
         this.messagesLoaded = true
       }
-      // this.addNewMessage()
+      // this.addNewMessage() */
     },
 
     addMessages (senderId, reset) {
@@ -78,19 +82,6 @@ export default {
       }
 
       return messages
-    },
-
-    sendMessage (message) {
-      this.messages = [
-        ...this.messages,
-        {
-          _id: this.messages.length,
-          content: message.content,
-          senderId: this.currentUserId,
-          timestamp: new Date().toString().substring(16, 21),
-          date: new Date().toDateString()
-        }
-      ]
     },
 
     addNewMessage () {
