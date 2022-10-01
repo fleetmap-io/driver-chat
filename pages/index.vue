@@ -1,5 +1,6 @@
 <template>
   <div>
+    <select-driver v-if="addDriver" @click="addRoom" />
     <vue-advanced-chat
       height="calc(100vh - 65px)"
       :current-user-id="currentUserId"
@@ -9,7 +10,7 @@
       :messages-loaded="messagesLoaded"
       @send-message="$store.dispatch('sendMessage', $event.detail[0])"
       @fetch-messages="fetchMessages($event.detail[0])"
-      @add-room="addRoom"
+      @add-room="addDriver=true"
     />
   </div>
 </template>
@@ -17,12 +18,15 @@
 <script>
 import { register } from 'vue-advanced-chat'
 import { mapGetters } from 'vuex'
+import SelectDriver from '@/components/select-driver'
 register()
 
 export default {
   name: 'IndexPage',
+  components: { SelectDriver },
   data () {
     return {
+      addDriver: false,
       currentUserId: '1234',
       messages: [],
       messagesLoaded: false
@@ -34,29 +38,12 @@ export default {
     await this.$store.dispatch('bindRooms')
   },
   computed: {
-    ...mapGetters(['drivers']),
-    rooms () {
-      return this.drivers.map((d) => {
-        return {
-          roomId: d.id + '',
-          roomName: d.name,
-          avatar: `https://ui-avatars.com/api/?name=${d.name}`,
-          users: [
-            {
-              _id: '1234',
-              username: 'John Doe'
-            },
-            {
-              _id: d.id + '',
-              username: d.name
-            }
-          ]
-        }
-      })
-    }
+    ...mapGetters(['drivers', 'rooms'])
   },
   methods: {
-    addRoom () {
+    addRoom (d) {
+      this.$store.dispatch('addRoom', d)
+      this.addDriver = false
     },
     fetchMessages (/* {  room, options = {}  } */) {
       this.messages = this.$store.getters.messages

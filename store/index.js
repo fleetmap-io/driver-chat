@@ -44,8 +44,30 @@ export const actions = {
     const db = this.$fire.firestore
     return bindFirestoreRef('messages', db.collection('messages').orderBy('_id'))
   }),
-  bindRooms: firestoreAction(function ({ state, bindFirestoreRef }) {
+  bindRooms: firestoreAction(function ({
+    state,
+    bindFirestoreRef
+  }) {
     return bindFirestoreRef('rooms', this.$fire.firestore.collection('rooms')
-      .where('id', 'in', state.drivers.map(d => `${d.id}_${state.session.id}`)))
+      .where('roomId', 'in', state.drivers.map(d => `${d.id}_${state.session.id}`)))
+  }),
+  addRoom: firestoreAction(function ({ state }, driverId) {
+    const d = state.drivers.find(d => d.id === driverId)
+    return this.$fire.firestore.collection('rooms').add({
+      roomId: `${d.id}_${state.session.id}`,
+      driverId: d.id,
+      roomName: d.name,
+      avatar: `https://ui-avatars.com/api/?name=${d.name}`,
+      users: [
+        {
+          _id: d.id,
+          username: d.name
+        },
+        {
+          _id: state.session.id,
+          username: state.session.name
+        }
+      ]
+    })
   })
 }
