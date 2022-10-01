@@ -26,7 +26,7 @@ export const mutations = {
 
 export const actions = {
   sendMessage: firestoreAction(function ({ state }, message) {
-    return this.$fire.firestore.collection('messages').add({
+    return this.$fire.firestore.collection(`rooms/${message.roomId}/messages`).add({
       _id: new Date().getTime(),
       content: message.content,
       senderId: state.session.id,
@@ -40,9 +40,9 @@ export const actions = {
   async fetchDrivers ({ commit }) {
     commit('setDrivers', await this.$axios.$get('/drivers'))
   },
-  fetchMessages: firestoreAction(function ({ bindFirestoreRef }) {
+  bindMessages: firestoreAction(function ({ bindFirestoreRef }, roomId) {
     const db = this.$fire.firestore
-    return bindFirestoreRef('messages', db.collection('messages').orderBy('_id'))
+    return bindFirestoreRef('messages', db.collection(`rooms/${roomId}/messages`).orderBy('_id'))
   }),
   bindRooms: firestoreAction(function ({
     state,
@@ -53,8 +53,9 @@ export const actions = {
   }),
   addRoom: firestoreAction(function ({ state }, driverId) {
     const d = state.drivers.find(d => d.id === driverId)
-    return this.$fire.firestore.collection('rooms').add({
-      roomId: `${d.id}_${state.session.id}`,
+    const id = `${d.id}_${state.session.id}`
+    return this.$fire.firestore.collection('rooms').doc(id).set({
+      roomId: id,
       driverId: d.id,
       roomName: d.name,
       avatar: `https://ui-avatars.com/api/?name=${d.name}`,
@@ -69,5 +70,8 @@ export const actions = {
         }
       ]
     })
+  }),
+  unbindMessages: firestoreAction(({ unbindFirestoreRef }) => {
+    unbindFirestoreRef('messages')
   })
 }

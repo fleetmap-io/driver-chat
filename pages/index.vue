@@ -34,7 +34,6 @@ export default {
   },
   async fetch () {
     await this.$store.dispatch('fetchDrivers')
-    await this.$store.dispatch('fetchMessages')
     await this.$store.dispatch('bindRooms')
   },
   computed: {
@@ -45,7 +44,10 @@ export default {
       this.$store.dispatch('addRoom', d)
       this.addDriver = false
     },
-    fetchMessages (/* {  room, options = {}  } */) {
+    async fetchMessages ({ room/*, options = {} */ }) {
+      this.messages = []
+      await this.$store.dispatch('unbindMessages')
+      await this.$store.dispatch('bindMessages', room.roomId)
       this.messages = this.$store.getters.messages
       this.messagesLoaded = true
       /*
@@ -56,38 +58,6 @@ export default {
         this.messagesLoaded = true
       }
       // this.addNewMessage() */
-    },
-
-    addMessages (senderId, reset) {
-      const messages = []
-
-      for (let i = 0; i < 30; i++) {
-        messages.push({
-          _id: reset ? i : this.messages.length + i,
-          content: `${reset ? '' : 'paginated'} message ${i + 1}`,
-          senderId,
-          username: 'John Doe',
-          date: '13 November',
-          timestamp: '10:20'
-        })
-      }
-
-      return messages
-    },
-
-    addNewMessage () {
-      setTimeout(() => {
-        this.messages = [
-          ...this.messages,
-          {
-            _id: this.messages.length,
-            content: 'NEW MESSAGE',
-            senderId: '1234',
-            timestamp: new Date().toString().substring(16, 21),
-            date: new Date().toDateString()
-          }
-        ]
-      }, 2000)
     }
   }
 }
