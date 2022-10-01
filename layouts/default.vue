@@ -45,7 +45,7 @@
                 <div>
                   <button id="user-menu-button" type="button" class="flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800" aria-expanded="false" aria-haspopup="true">
                     <span class="sr-only">Open user menu</span>
-                    <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=John+Doe&size=16" alt="">
+                    <img class="h-8 w-8 rounded-full" :src="`https://ui-avatars.com/api/?name=${session && session.name}`" alt="">
                   </button>
                 </div>
 
@@ -176,8 +176,15 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 
 export default {
-  name: 'DefaultLayout'
+  name: 'DefaultLayout',
+  fetch () {
+    this.$store.dispatch('fetchSession')
+  },
+  computed: {
+    ...mapGetters(['session'])
+  }
 }
 </script>

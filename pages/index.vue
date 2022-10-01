@@ -15,6 +15,7 @@
 
 <script>
 import { register } from 'vue-advanced-chat'
+import { mapGetters } from 'vuex'
 register()
 
 export default {
@@ -22,42 +23,54 @@ export default {
   data () {
     return {
       currentUserId: '1234',
-      rooms: [
-        {
-          roomId: '1',
-          roomName: 'Room 1',
-          avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
-          users: [
-            { _id: '1234', username: 'John Doe' },
-            { _id: '4321', username: 'John Snow' }
-          ]
-        }
-      ],
       messages: [],
       messagesLoaded: false
     }
   },
-  methods: {
-    fetchMessages ({ options = {} }) {
-      setTimeout(() => {
-        if (options.reset) {
-          this.messages = this.addMessages(true)
-        } else {
-          this.messages = [...this.addMessages(), ...this.messages]
-          this.messagesLoaded = true
+  fetch () {
+    this.$store.dispatch('fetchDrivers')
+  },
+  computed: {
+    ...mapGetters(['drivers']),
+    rooms () {
+      return this.drivers.map((d) => {
+        return {
+          roomId: d.id + '',
+          roomName: d.name,
+          avatar: `https://ui-avatars.com/api/?name=${d.name}`,
+          users: [
+            {
+              _id: '1234',
+              username: 'John Doe'
+            },
+            {
+              _id: d.id + '',
+              username: d.name
+            }
+          ]
         }
-        // this.addNewMessage()
       })
+    }
+  },
+  methods: {
+    fetchMessages ({ room, options = {} }) {
+      if (options.reset) {
+        this.messages = this.addMessages(room.roomId, true)
+      } else {
+        this.messages = [...this.addMessages(room.roomId), ...this.messages]
+        this.messagesLoaded = true
+      }
+      // this.addNewMessage()
     },
 
-    addMessages (reset) {
+    addMessages (senderId, reset) {
       const messages = []
 
       for (let i = 0; i < 30; i++) {
         messages.push({
           _id: reset ? i : this.messages.length + i,
           content: `${reset ? '' : 'paginated'} message ${i + 1}`,
-          senderId: '4321',
+          senderId,
           username: 'John Doe',
           date: '13 November',
           timestamp: '10:20'
