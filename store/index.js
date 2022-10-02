@@ -49,19 +49,20 @@ export const actions = {
     bindFirestoreRef
   }) {
     return bindFirestoreRef('rooms', this.$fire.firestore.collection('rooms')
-      .where('roomId', 'in', state.drivers.map(d => `${d.id}_${state.session.id}`)))
+      .where('roomId', 'in', state.drivers.map(d => `${d.uniqueId}_${state.session.id}`)))
   }),
   addRoom: firestoreAction(function ({ state }, driverId) {
     const d = state.drivers.find(d => d.id === driverId)
-    const id = `${d.id}_${state.session.id}`
+    const id = `${d.uniqueId}_${state.session.id}`
     return this.$fire.firestore.collection('rooms').doc(id).set({
       roomId: id,
       driverId: d.id,
+      user: state.session.name,
       roomName: d.name,
       avatar: `https://ui-avatars.com/api/?name=${d.name}`,
       users: [
         {
-          _id: d.id,
+          _id: d.uniqueId,
           username: d.name
         },
         {
