@@ -27,17 +27,13 @@ export default {
   data () {
     return {
       addDriver: false,
-      currentUserId: '1234',
       messages: [],
       messagesLoaded: false
     }
   },
-  async fetch () {
-    await this.$store.dispatch('fetchDrivers')
-    await this.$store.dispatch('bindRooms')
-  },
   computed: {
-    ...mapGetters(['drivers', 'rooms'])
+    ...mapGetters(['drivers', 'rooms', 'session']),
+    currentUserId () { return this.session && this.session.id + '' }
   },
   methods: {
     addRoom (d) {

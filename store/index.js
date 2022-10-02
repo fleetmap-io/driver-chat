@@ -29,7 +29,7 @@ export const actions = {
     return this.$fire.firestore.collection(`rooms/${message.roomId}/messages`).add({
       _id: new Date().getTime(),
       content: message.content,
-      senderId: state.session.id,
+      senderId: state.session.id + '',
       timestamp: new Date().toString().substring(16, 21),
       date: new Date().toLocaleDateString()
     })
