@@ -37,7 +37,6 @@ export const mutations = {
 
 export const actions = {
   async login ({ commit, getters, dispatch }, { username, password }) {
-    commit('setLoading', true)
     commit('setCognitoSession', await Auth.signIn(username, password))
     await this.$axios.$get('backend/api', {
       headers: {
@@ -45,7 +44,6 @@ export const actions = {
       }
     })
     await dispatch('fetchSession')
-    commit('setLoading', false)
   },
   sendMessage: firestoreAction(function ({ state }, message) {
     return this.$fire.firestore.collection(`rooms/${message.roomId}/messages`).add({

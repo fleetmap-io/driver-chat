@@ -40,7 +40,7 @@ pt:
           <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">start your 14-day free trial</a--->
         </p>
       </div>
-      <form class="mt-8 space-y-6" @submit.prevent="$store.dispatch('login', {username, password})">
+      <form class="mt-8 space-y-6" @submit.prevent="login">
         <input type="hidden" name="remember" value="true">
         <div class="-space-y-px rounded-md shadow-sm">
           <div>
@@ -120,6 +120,17 @@ export default {
   },
   computed: {
     ...mapGetters(['loading'])
+  },
+  methods: {
+    login () {
+      this.$store.commit('setLoading', true)
+      this.$store.dispatch(
+        'login',
+        { username: this.username, password: this.password }
+      ).then(() => this.$router.push('/')
+      ).catch(e => alert(e)
+      ).finally(() => this.$store.commit('setLoading', false))
+    }
   }
 }
 </script>
