@@ -1,21 +1,32 @@
 import { firestoreAction, vuexfireMutations } from 'vuexfire'
+import { Auth } from '@aws-amplify/auth'
 
 export const state = () => ({
   session: null,
   drivers: [],
   messages: [],
-  rooms: []
+  rooms: [],
+  cognitoSession: null,
+  loading: false
 })
 
 export const getters = {
+  loading (state) { return state.loading },
   session (state) { return state.session },
   drivers (state) { return state.drivers },
   messages (state) { return state.messages },
-  rooms (state) { return state.rooms }
+  rooms (state) { return state.rooms },
+  cognitoSession (state) { return state.cognitoSession }
 }
 
 export const mutations = {
   ...vuexfireMutations,
+  setLoading (state, loading) {
+    state.loading = loading
+  },
+  setCognitoSession (state, session) {
+    state.cognitoSession = session
+  },
   setSession (state, session) {
     state.session = session
   },
@@ -25,6 +36,17 @@ export const mutations = {
 }
 
 export const actions = {
+  async login ({ commit, getters, dispatch }, { username, password }) {
+    commit('setLoading', true)
+    commit('setCognitoSession', await Auth.signIn(username, password))
+    await this.$axios.$get('backend/api', {
+      headers: {
+        Authorization: `${getters.cognitoSession.signInUserSession.accessToken.getJwtToken()}`
+      }
+    })
+    await dispatch('fetchSession')
+    commit('setLoading', false)
+  },
   sendMessage: firestoreAction(function ({ state }, message) {
     return this.$fire.firestore.collection(`rooms/${message.roomId}/messages`).add({
       _id: new Date().getTime(),
@@ -35,10 +57,10 @@ export const actions = {
     })
   }),
   async fetchSession ({ commit }) {
-    commit('setSession', await this.$axios.$get('/session'))
+    commit('setSession', await this.$axios.$get('api/session'))
   },
   async fetchDrivers ({ commit }) {
-    commit('setDrivers', await this.$axios.$get('/drivers'))
+    commit('setDrivers', await this.$axios.$get('api/drivers'))
   },
   bindMessages: firestoreAction(function ({ bindFirestoreRef }, roomId) {
     const db = this.$fire.firestore

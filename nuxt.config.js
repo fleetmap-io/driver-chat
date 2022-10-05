@@ -2,9 +2,12 @@ export default {
   server: {
     port: 8000
   },
+  env: {
+    userPoolId: process.env.userPoolId,
+    userPoolWebClientId: process.env.userPoolWebClientId
+  },
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
-
 
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
@@ -32,6 +35,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    '@/plugins/amplify.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -48,7 +52,8 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
-    '@nuxtjs/firebase'
+    '@nuxtjs/firebase',
+    '@nuxtjs/i18n'
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -75,6 +80,15 @@ export default {
     services: {
       firestore: true,
       storage: true
+    }
+  },
+
+  i18n: {
+    defaultLocale: 'pt',
+    locales: ['en', 'pt', 'es'],
+    vueI18nLoader: true,
+    detectBrowserLanguage: {
+      useCookie: false
     }
   }
 }

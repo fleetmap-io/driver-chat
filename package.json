@@ -1,6 +1,6 @@
 {
   "name": "driver-chat",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "private": true,
   "scripts": {
     "dev": "nuxt",
@@ -14,8 +14,11 @@
     "deploy": "npm run generate && push-dir --dir=dist --branch=gh-pages --cleanup"
   },
   "dependencies": {
+    "@aws-amplify/auth": "^4.6.8",
+    "@aws-amplify/core": "^4.7.6",
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/firebase": "^8.2.2",
+    "@nuxtjs/i18n": "^7.3.0",
     "core-js": "^3.19.3",
     "firebase": "^9.10.0",
     "nuxt": "^2.15.8",
