@@ -39,7 +39,7 @@ export const actions = {
   async logout ({ commit }) {
     commit('setLoading', true)
     try {
-      await this.$router.push('/')
+      await this.$axios.$delete('api/session')
       await Auth.signOut()
       window.location.href = '/'
     } catch (e) {
