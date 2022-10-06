@@ -85,34 +85,30 @@
                 aria-expanded="false"
                 aria-haspopup="true"
                 @click="menuVisible=!menuVisible"
+                @focusout="menuVisible=false"
               >
                 <span class="sr-only">Open user menu</span>
                 <img class="h-8 w-8 rounded-full" :src="`https://ui-avatars.com/api/?name=${session && session.name}`" alt="">
               </button>
             </div>
 
-            <!--
-              Dropdown menu, show/hide based on menu state.
-
-              Entering: "transition ease-out duration-100"
-                From: "transform opacity-0 scale-95"
-                To: "transform opacity-100 scale-100"
-              Leaving: "transition ease-in duration-75"
-                From: "transform opacity-100 scale-100"
-                To: "transform opacity-0 scale-95"
-            -->
             <div
-              v-if="menuVisible"
-              class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              :class="`transition opacity-${menuVisible?100:0} absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="user-menu-button"
               tabindex="-1"
             >
-              <!-- Active: "bg-gray-100", Not Active: "" -->
-              <a id="user-menu-item-0" href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1">Your Profile</a>
-              <a id="user-menu-item-1" href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1">Settings</a>
-              <a id="user-menu-item-2" href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1">Sign out</a>
+              <span class="block px-4 py-2 text-sm text-gray-500">{{ session.email }}</span>
+              <a
+                v-for="menuItem in menuItems"
+                :key="menuItem.text"
+                class="block px-4 py-2 text-sm text-gray-700 cursor-pointer"
+                role="menuitem"
+                @click="menuItem.click"
+                @mouseenter="(e)=>e.srcElement.classList.add('bg-gray-100')"
+                @mouseleave="(e)=>e.srcElement.classList.remove('bg-gray-100')"
+              >{{ menuItem.text }}</a>
             </div>
           </div>
         </div>
@@ -135,10 +131,13 @@
 import { mapGetters } from 'vuex'
 
 export default {
-  name: 'NavBar2',
+  name: 'NavBar',
   data () {
     return {
-      menuVisible: true
+      menuItems: [
+        { text: 'Logout', click: () => this.$store.dispatch('logout') }
+      ],
+      menuVisible: false
     }
   },
   computed: {

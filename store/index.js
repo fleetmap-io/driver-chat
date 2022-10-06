@@ -36,6 +36,17 @@ export const mutations = {
 }
 
 export const actions = {
+  async logout ({ commit }) {
+    commit('setLoading', true)
+    try {
+      await this.$router.push('/')
+      await Auth.signOut()
+      window.location.href = '/'
+    } catch (e) {
+      alert(e)
+    }
+    commit('setLoading', false)
+  },
   async login ({ commit, getters, dispatch }, { username, password }) {
     commit('setCognitoSession', await Auth.signIn(username, password))
     await this.$axios.$get('backend/api', {
