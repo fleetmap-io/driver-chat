@@ -91,13 +91,13 @@
                 <img class="h-8 w-8 rounded-full" :src="`https://ui-avatars.com/api/?name=${session && session.name}`" alt="">
               </button>
             </div>
-
             <div
-              :class="`transition opacity-${menuVisible?100:0} absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`"
+              :class="`transition absolute right-0 z-10 mt-2 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="user-menu-button"
               tabindex="-1"
+              :style="`opacity: ${menuVisible?100:0}`"
             >
               <span class="block px-4 py-2 text-sm text-gray-500">{{ session.email }}</span>
               <a
