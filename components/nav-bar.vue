@@ -99,7 +99,7 @@
               tabindex="-1"
               :style="`opacity: ${menuVisible?100:0}`"
             >
-              <span class="block px-4 py-2 text-sm text-gray-500">{{ session.email }}</span>
+              <span class="block px-4 py-2 text-sm text-gray-400">{{ session.email }}</span>
               <a
                 v-for="menuItem in menuItems"
                 :key="menuItem.text"
