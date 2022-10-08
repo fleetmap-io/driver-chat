@@ -2,6 +2,7 @@
   <div>
     <select-driver v-if="addDriver" @click="addRoom" @cancel="addDriver=false" />
     <vue-advanced-chat
+      :text-messages="textMessages"
       height="calc(100vh - 65px)"
       :current-user-id="currentUserId"
       :rooms="JSON.stringify(rooms)"
@@ -33,6 +34,23 @@ export default {
   },
   computed: {
     ...mapGetters(['drivers', 'rooms', 'session']),
+    textMessages () {
+      return JSON.stringify(
+        {
+          ROOMS_EMPTY: this.$t('ROOMS_EMPTY'),
+          ROOM_EMPTY: this.$t('ROOM_EMPTY'),
+          NEW_MESSAGES: this.$t('NEW_MESSAGES'),
+          MESSAGE_DELETED: this.$t('MESSAGE_DELETED'),
+          MESSAGES_EMPTY: this.$t('MESSAGES_EMPTY'),
+          CONVERSATION_STARTED: this.$t('CONVERSATION_STARTED'),
+          TYPE_MESSAGE: this.$t('TYPE_MESSAGE'),
+          SEARCH: this.$t('SEARCH'),
+          IS_ONLINE: this.$t('IS_ONLINE'),
+          LAST_SEEN: this.$t('LAST_SEEN'),
+          IS_TYPING: this.$t('IS_TYPING'),
+          CANCEL_SELECT_MESSAGE: this.$t('CANCEL_SELECT_MESSAGE')
+        })
+    },
     currentUserId () { return this.session && this.session.id + '' }
   },
   methods: {
