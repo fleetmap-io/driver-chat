@@ -1,3 +1,9 @@
+<i18n lang="yaml">
+pt:
+  TYPE_MESSAGE: 'Escreva uma mensagem'
+es:
+  TYPE_MESSAGE: 'Escreva un mensaje'
+</i18n>
 <template>
   <div>
     <select-driver v-if="addDriver" @click="addRoom" @cancel="addDriver=false" />

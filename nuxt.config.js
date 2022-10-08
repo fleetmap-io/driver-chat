@@ -3,6 +3,7 @@ export default {
     port: 8000
   },
   env: {
+    DRIVER_BACKEND_URL: process.env.DRIVER_BACKEND_URL,
     userPoolId: process.env.userPoolId,
     userPoolWebClientId: process.env.userPoolWebClientId
   },

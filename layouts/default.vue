@@ -16,6 +16,7 @@ export default {
   async fetch () {
     await this.$store.dispatch('fetchDrivers')
     await this.$store.dispatch('bindRooms')
+    await this.$store.dispatch('bindUsers')
   },
   computed: {
     ...mapGetters(['session'])

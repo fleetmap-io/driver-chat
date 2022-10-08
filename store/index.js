@@ -1,5 +1,6 @@
 import { firestoreAction, vuexfireMutations } from 'vuexfire'
 import { Auth } from '@aws-amplify/auth'
+const driverUrl = process.env.DRIVER_BACKEND_URL
 
 export const state = () => ({
   session: null,
@@ -7,10 +8,12 @@ export const state = () => ({
   messages: [],
   rooms: [],
   cognitoSession: null,
-  loading: false
+  loading: false,
+  users: []
 })
 
 export const getters = {
+  users (state) { return state.users },
   loading (state) { return state.loading },
   session (state) { return state.session },
   drivers (state) { return state.drivers },
@@ -48,24 +51,34 @@ export const actions = {
     commit('setLoading', false)
   },
   async login ({ commit, getters, dispatch }, { username, password }) {
-    commit('setCognitoSession', await Auth.signIn(username, password))
+    const { signInUserSession } = await Auth.signIn(username, password)
+    commit('setCognitoSession', signInUserSession)
     await this.$axios.$get('backend/api', {
       headers: {
-        Authorization: `${getters.cognitoSession.signInUserSession.accessToken.getJwtToken()}`
+        Authorization: `${getters.cognitoSession.accessToken.getJwtToken()}`
       }
     })
     await dispatch('fetchSession')
   },
-  sendMessage: firestoreAction(function ({ state }, message) {
-    return this.$fire.firestore.collection(`rooms/${message.roomId}/messages`).add({
+  sendMessage: firestoreAction(async function ({ state, getters, dispatch }, message) {
+    await this.$fire.firestore.collection(`rooms/${message.roomId}/messages`).add({
       _id: new Date().getTime(),
       content: message.content,
       senderId: state.session.id + '',
       timestamp: new Date().toString().substring(16, 21),
       date: new Date().toLocaleDateString()
     })
+    const room = getters.rooms.find(r => r.roomId === message.roomId)
+    return this.$axios.$post(driverUrl + '/messages', {
+      notification: {
+        title: state.session.name,
+        body: message.content
+      },
+      token: state.users.find(u => u.id === room.users[0]._id).pushToken
+    })
   }),
   async fetchSession ({ commit }) {
+    commit('setCognitoSession', await Auth.currentSession())
     commit('setSession', await this.$axios.$get('api/session'))
   },
   async fetchDrivers ({ commit }) {
@@ -74,6 +87,11 @@ export const actions = {
   bindMessages: firestoreAction(function ({ bindFirestoreRef }, roomId) {
     const db = this.$fire.firestore
     return bindFirestoreRef('messages', db.collection(`rooms/${roomId}/messages`).orderBy('_id'))
+  }),
+  bindUsers: firestoreAction(function ({
+    bindFirestoreRef
+  }) {
+    return bindFirestoreRef('users', this.$fire.firestore.collection('users'))
   }),
   bindRooms: firestoreAction(function ({
     state,
