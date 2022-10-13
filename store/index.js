@@ -75,8 +75,18 @@ export const actions = {
         title: state.session.name,
         body: message.content
       },
+      webpush: {
+        notification: {
+          actions: [
+            {
+              action: 'message',
+              tile: state.session.name
+            }
+          ]
+        }
+      },
       token: state.users.find(u => u.id === room.users[0]._id).pushToken,
-      data: { senderId: data.senderId, action: 'message' }
+      data: { senderId: data.senderId }
     })
   }),
   async fetchSession ({ commit }) {
