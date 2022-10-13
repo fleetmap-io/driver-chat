@@ -76,7 +76,7 @@ export const actions = {
         body: message.content
       },
       token: state.users.find(u => u.id === room.users[0]._id).pushToken,
-      data: { senderId: data.senderId }
+      data: { senderId: data.senderId, action: 'message' }
     })
   }),
   async fetchSession ({ commit }) {
