@@ -61,20 +61,22 @@ export const actions = {
     await dispatch('fetchSession')
   },
   sendMessage: firestoreAction(async function ({ state, getters, dispatch }, message) {
-    await this.$fire.firestore.collection(`rooms/${message.roomId}/messages`).add({
+    const data = {
       _id: new Date().getTime(),
       content: message.content,
       senderId: state.session.id + '',
       timestamp: new Date().toString().substring(16, 21),
       date: new Date().toLocaleDateString()
-    })
+    }
+    await this.$fire.firestore.collection(`rooms/${message.roomId}/messages`).add(data)
     const room = getters.rooms.find(r => r.roomId === message.roomId)
     return this.$axios.$post(driverUrl + '/messages', {
       notification: {
         title: state.session.name,
         body: message.content
       },
-      token: state.users.find(u => u.id === room.users[0]._id).pushToken
+      token: state.users.find(u => u.id === room.users[0]._id).pushToken,
+      data: { senderId: data.senderId }
     })
   }),
   async fetchSession ({ commit }) {
