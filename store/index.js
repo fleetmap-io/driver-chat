@@ -13,6 +13,7 @@ export const state = () => ({
 })
 
 export const getters = {
+  avatar: state => `https://ui-avatars.com/api/?size=300&name=${encodeURI(state.session && state.session.name)}`,
   users (state) { return state.users },
   loading (state) { return state.loading },
   session (state) { return state.session },
@@ -70,8 +71,9 @@ export const actions = {
     }
     await this.$fire.firestore.collection(`rooms/${message.roomId}/messages`).add(data)
     const room = getters.rooms.find(r => r.roomId === message.roomId)
-    const image =
-      'https://avatars2.githubusercontent.com/u/4020037?s=460&u=c5f9c131d565202d8e530295b130239edd25768d&v=4'
+    // const image = getters.avatar
+    const image = 'https://avatars2.githubusercontent.com/u/4020037?s=460&u=c5f9c131d565202d8e530295b130239edd25768d&v=4'
+
     return this.$axios.$post(driverUrl + '/messages', {
       name: 'testPushMessage',
       android: {},
@@ -82,13 +84,8 @@ export const actions = {
           // Adds actions to the push notification
           actions: [
             {
-              action: 'goToLupasGithub',
-              title: 'Github: lupas',
-              icon: ''
-            },
-            {
-              action: 'goToModuleGithub',
-              title: 'Firebase Module',
+              action: 'message',
+              title: state.session.name,
               icon: ''
             }
           ]

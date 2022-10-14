@@ -88,7 +88,7 @@
                 @focusout="menuVisible=false"
               >
                 <span class="sr-only">Open user menu</span>
-                <img class="h-8 w-8 rounded-full" :src="`https://ui-avatars.com/api/?name=${session && session.name}`" alt="">
+                <img class="h-8 w-8 rounded-full" :src="avatar" alt="">
               </button>
             </div>
             <div
@@ -141,7 +141,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['session'])
+    ...mapGetters(['session', 'avatar'])
   }
 }
 </script>
