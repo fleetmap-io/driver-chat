@@ -78,7 +78,7 @@ export const actions = {
       },
       webpush: {
         notification: {
-          actions: [
+          action: [
             {
               action: 'message',
               title: state.session.name
