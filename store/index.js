@@ -70,21 +70,42 @@ export const actions = {
     }
     await this.$fire.firestore.collection(`rooms/${message.roomId}/messages`).add(data)
     const room = getters.rooms.find(r => r.roomId === message.roomId)
+    const image =
+      'https://avatars2.githubusercontent.com/u/4020037?s=460&u=c5f9c131d565202d8e530295b130239edd25768d&v=4'
     return this.$axios.$post(driverUrl + '/messages', {
+      name: 'testPushMessage',
+      android: {},
+      webpush: {
+        notification: {
+          // Adds the image to the push notificationm
+          icon: image,
+          // Adds actions to the push notification
+          actions: [
+            {
+              action: 'goToLupasGithub',
+              title: 'Github: lupas',
+              icon: ''
+            },
+            {
+              action: 'goToModuleGithub',
+              title: 'Firebase Module',
+              icon: ''
+            }
+          ]
+        },
+        fcm_options: {
+          // Adds a link to be opened when clicked on the push notification
+          link: 'https://nuxt-fire-demo.herokuapp.com/'
+        }
+      },
+      apns: {
+        fcm_options: {}
+      },
+      fcm_options: {},
       notification: {
         title: state.session.name,
         body: message.content,
-        click_action: 'http://localhost:8081'
-      },
-      webpush: {
-        notification: {
-          action: [
-            {
-              action: 'message',
-              title: state.session.name
-            }
-          ]
-        }
+        image
       },
       token: state.users.find(u => u.id === room.users[0]._id).pushToken,
       data: { senderId: data.senderId }
