@@ -73,14 +73,15 @@ export const actions = {
     return this.$axios.$post(driverUrl + '/messages', {
       notification: {
         title: state.session.name,
-        body: message.content
+        body: message.content,
+        click_action: 'http://localhost:8081'
       },
       webpush: {
         notification: {
           actions: [
             {
               action: 'message',
-              tile: state.session.name
+              title: state.session.name
             }
           ]
         }
