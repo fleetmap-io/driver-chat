@@ -152,7 +152,7 @@ export default {
         'login',
         { username: this.username, password: this.password }
       ).then(() => this.$router.push('/')
-      ).catch(e => alert(e)
+      ).catch((e) => { console.error(e); alert(e) }
       ).finally(() => this.$store.commit('setLoading', false))
     }
   }

@@ -80,7 +80,15 @@ export default {
     },
     services: {
       firestore: true,
-      storage: true
+      storage: true,
+      messaging: {
+        createServiceWorker: true,
+        fcmPublicVapidKey: process.env.fcmPublicVapidKey
+      },
+      actions: {
+        action: 'message',
+        url: '/message'
+      }
     }
   },
 

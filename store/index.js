@@ -9,18 +9,23 @@ export const state = () => ({
   rooms: [],
   cognitoSession: null,
   loading: false,
-  users: []
+  users: [],
+  dispatchUsers: [],
+  pushToken: ''
 })
 
 export const getters = {
   avatar: state => `https://ui-avatars.com/api/?size=300&name=${encodeURI(state.session && state.session.name)}`,
   users (state) { return state.users },
+  dispatchUsers (state) { return state.dispatchUsers },
   loading (state) { return state.loading },
   session (state) { return state.session },
   drivers (state) { return state.drivers },
   messages (state) { return state.messages },
   rooms (state) { return state.rooms },
-  cognitoSession (state) { return state.cognitoSession }
+  cognitoSession (state) { return state.cognitoSession },
+  pushToken (state) { return state.pushToken },
+  user (state) { return state.session && state.session.id }
 }
 
 export const mutations = {
@@ -36,10 +41,21 @@ export const mutations = {
   },
   setDrivers (state, drivers) {
     state.drivers = drivers
+  },
+  setPushToken (state, token) {
+    state.pushToken = token
   }
 }
 
 export const actions = {
+  addPushToken: firestoreAction(function ({ getters, state }) {
+    return this.$fire.firestore.collection('dispatchUsers').doc('' + getters.user).set({
+      id: getters.user,
+      email: state.session.email,
+      pushToken: getters.pushToken,
+      lastUpdate: new Date()
+    })
+  }),
   async logout ({ commit }) {
     commit('setLoading', true)
     try {
@@ -59,7 +75,9 @@ export const actions = {
         Authorization: `${getters.cognitoSession.accessToken.getJwtToken()}`
       }
     })
+    commit('setPushToken', await this.$fire.messaging.getToken())
     await dispatch('fetchSession')
+    await dispatch('addPushToken')
   },
   sendMessage: firestoreAction(async function ({ state, getters, dispatch }, message) {
     const data = {
