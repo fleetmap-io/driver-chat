@@ -75,9 +75,7 @@ export const actions = {
         Authorization: `${getters.cognitoSession.accessToken.getJwtToken()}`
       }
     })
-    commit('setPushToken', await this.$fire.messaging.getToken())
     await dispatch('fetchSession')
-    await dispatch('addPushToken')
   },
   sendMessage: firestoreAction(async function ({ state, getters, dispatch }, message) {
     const data = {
@@ -126,9 +124,11 @@ export const actions = {
       data: { senderId: data.senderId }
     })
   }),
-  async fetchSession ({ commit }) {
+  async fetchSession ({ commit, dispatch }) {
     commit('setCognitoSession', await Auth.currentSession())
     commit('setSession', await this.$axios.$get('api/session'))
+    commit('setPushToken', await this.$fire.messaging.getToken())
+    await dispatch('addPushToken')
   },
   async fetchDrivers ({ commit }) {
     commit('setDrivers', await this.$axios.$get('api/drivers'))
