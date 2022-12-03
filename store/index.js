@@ -1,5 +1,6 @@
 import { firestoreAction, vuexfireMutations } from 'vuexfire'
 import { Auth } from '@aws-amplify/auth'
+import { increment } from 'firebase/firestore'
 const driverUrl = process.env.DRIVER_BACKEND_URL
 
 export const state = () => ({
@@ -89,32 +90,11 @@ export const actions = {
     const room = getters.rooms.find(r => r.roomId === message.roomId)
     // const image = getters.avatar
     const image = 'https://avatars2.githubusercontent.com/u/4020037?s=460&u=c5f9c131d565202d8e530295b130239edd25768d&v=4'
-
+    await this.$fire.firestore.collection('rooms').doc(`${message.roomId}`).update({
+      driverUnreadCount: increment(1)
+    })
     return this.$axios.$post(driverUrl + '/messages', {
-      name: 'testPushMessage',
       android: {},
-      webpush: {
-        notification: {
-          // Adds the image to the push notificationm
-          icon: image,
-          // Adds actions to the push notification
-          actions: [
-            {
-              action: 'message',
-              title: state.session.name,
-              icon: ''
-            }
-          ]
-        },
-        fcm_options: {
-          // Adds a link to be opened when clicked on the push notification
-          link: 'https://nuxt-fire-demo.herokuapp.com/'
-        }
-      },
-      apns: {
-        fcm_options: {}
-      },
-      fcm_options: {},
       notification: {
         title: state.session.name,
         body: message.content,
