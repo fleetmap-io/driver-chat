@@ -49,6 +49,11 @@ export const mutations = {
 }
 
 export const actions = {
+  clearUnread ({ state }, roomId) {
+    return this.$fire.firestore.collection('rooms').doc(`${roomId}`).update({
+      unreadCount: 0
+    })
+  },
   addPushToken: firestoreAction(function ({ getters, state }) {
     return this.$fire.firestore.collection('dispatchUsers').doc('' + getters.user).set({
       id: getters.user,
@@ -89,9 +94,10 @@ export const actions = {
     await this.$fire.firestore.collection(`rooms/${message.roomId}/messages`).add(data)
     const room = getters.rooms.find(r => r.roomId === message.roomId)
     // const image = getters.avatar
-    const image = 'https://avatars2.githubusercontent.com/u/4020037?s=460&u=c5f9c131d565202d8e530295b130239edd25768d&v=4'
+    const image = getters.avatar
     await this.$fire.firestore.collection('rooms').doc(`${message.roomId}`).update({
-      driverUnreadCount: increment(1)
+      driverUnreadCount: increment(1),
+      unreadCount: 0
     })
     return this.$axios.$post(driverUrl + '/messages', {
       android: {},

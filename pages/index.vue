@@ -70,14 +70,7 @@ export default {
       await this.$store.dispatch('bindMessages', room.roomId)
       this.messages = this.$store.getters.messages
       this.messagesLoaded = true
-      /*
-      if (options.reset) {
-        this.messages = this.addMessages(room.roomId, true)
-      } else {
-        this.messages = [...this.addMessages(room.roomId), ...this.messages]
-        this.messagesLoaded = true
-      }
-      // this.addNewMessage() */
+      await this.$store.dispatch('clearUnread', room.roomId)
     }
   }
 }
