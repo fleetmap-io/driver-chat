@@ -1,4 +1,7 @@
 export default {
+  router: {
+    base: '/driverchat/'
+  },
   server: {
     port: 8000
   },
