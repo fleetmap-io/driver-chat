@@ -110,9 +110,17 @@ export const actions = {
       data: { senderId: data.senderId }
     })
   }),
-  async fetchSession ({ commit, dispatch }) {
+  async fetchSession ({ commit, dispatch, getters }) {
     commit('setCognitoSession', await Auth.currentSession())
-    commit('setSession', await this.$axios.$get('api/session'))
+    try {
+      commit('setSession', await this.$axios.$get('api/session'))
+    } catch (e) {
+      await this.$axios.$get('backend/api', {
+        headers: {
+          Authorization: `${getters.cognitoSession.accessToken.getJwtToken()}`
+        }
+      })
+    }
     commit('setPushToken', await this.$fire.messaging.getToken())
     await dispatch('addPushToken')
   },
