@@ -120,6 +120,7 @@ export const actions = {
           Authorization: `${getters.cognitoSession.accessToken.getJwtToken()}`
         }
       })
+      commit('setSession', await this.$axios.$get('api/session'))
     }
     commit('setPushToken', await this.$fire.messaging.getToken())
     await dispatch('addPushToken')
